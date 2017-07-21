@@ -1,0 +1,22 @@
+Package: EGSEA123
+Title: Easy and efficient ensemble gene set testing with EGSEA
+Version: 0.99.0
+Date: 2017-07-15
+Authors@R: c(person(role=c("aut", "cre"), "Monther", "Alhamdoosh", email = "monther.alhamdoosh@csl.com.au"),
+                      person(role="aut", "Charity", "Law", email = "law@wehi.edu.au"), 
+                      person(role="aut", "Luyi", "Tian", email = "tian.l@wehi.edu.au"),
+                      person(role="aut", "Julie", "Sheridan", email = "sheridan@wehi.edu.au"),
+                      person(role="aut", "Milica", "Ng", email = "milica.ng@csl.com.au"),
+                      person(role="aut", "Matthew", "Ritchie", email = "mritchie@wehi.edu.au"))
+Description: R package that supports the F1000Research workflow article `Easy and efficient ensemble gene set testing with EGSEA', Alhamdoosh et al. (2017).
+Depends: R (>= 3.4.0), EGSEA (>= 1.5.2), limma, edgeR
+License: Artistic-2.0
+Encoding: UTF-8
+LazyData: true
+VignetteBuilder: knitr
+biocViews: RNASeq, Microarray, GeneSetEnrichment, ReportWriting, Visualization 
+Suggests: knitr, rmarkdown
+NeedsCompilation: no
+Author: Monther Alhamdoosh, Charity Law, Luyi Tian, Julie Sheridan, Milica Ng and Matthew Ritchie
+Maintainer: Matthew Ritchie <mritchie@wehi.edu.au>
+URL: https://www.bioconductor.org/help/workflows/
