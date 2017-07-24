@@ -67,11 +67,11 @@ tabl <- "  # table of gene set collections available in EGSEAdata
 |              |                       | disrupted in cancer.                                   |
 |              | c7 Immunologic        | Gene sets representing the different cell              |
 |              |                       | types and stimulations relevant to the immune system.  |
-|:------------:|:---------------------:|:------------------------------------------------------:|
+|--------------|-----------------------|--------------------------------------------------------|
 |   KEGG       | Signalling            |                                                        |
 |              | Disease               | Gene sets obtained from the KEGG database.             |
 |              | Metabolic             |                                                        |
-|:------------:|:---------------------:|:------------------------------------------------------:|
+|--------------|-----------------------|--------------------------------------------------------|
 |   GeneSetDB  |  Pathway              |                                                        |
 |              |  Disease              |                                                        |
 |              |  Drug                 | Gene sets obtained from various online databases.      |
@@ -84,7 +84,7 @@ cat(tabl)
 The purpose of this article is to demonstrate the gene set testing workflow available in **EGSEA** on both an RNA-seq and a microarray experiment.
 Each analysis involves four major steps: (1) selecting appropriate gene set collections for analysis and building an index that maps between the members of each set and the expression matrix; (2) choosing base GSE methods to combine along with ranking options; (3) running the EGSEA test and (4) reporting the results in various ways to share with collaborators (see Figure 1 for a summary). The EGSEA functions involved in each of these steps are introduced with code to demonstrate to Bioinformaticians and Computational Biologists how they can be deployed to help with the interpretation of gene expression data.
 
-![The main steps in an **EGSEA** analysis and the functions that perform each task.](EGSEAWorkflow.png)
+![The main steps in an **EGSEA** analysis and the functions that perform each task.](EGSEAWorkFlow.png)
 
 # Gene expression profiling of the mouse mammary gland 
 
@@ -160,8 +160,10 @@ To highlight the capabilities of the **EGSEA** package, the KEGG pathways [@Kane
 Next, an index is built for each gene set collection using the EGSEA indexing functions to link the genes in the different gene set collections to the rows of our RNA-seq data. 
 Indexes for the c2 and c5 collections from MSigDB and for the KEGG pathways are built using the `buildIdx` function.
 
-```{r indexing}
+```{r loadegsea, message=FALSE, warning=FALSE}
 library(EGSEA)
+```
+```{r indexing}
 gs.annots = buildIdx(entrezIDs=v$genes$ENTREZID, species="mouse", 
            msigdb.gsets=c("c2", "c5"), go.part = TRUE)
 names(gs.annots)
@@ -338,7 +340,7 @@ The comparative pathway map shows the log-fold-changes for each gene in each con
 Since **EGSEA** combines the results from multiple gene set testing methods, it can be interesting to compare how different base methods rank a given gene set collection for a selected contrast.
 The command below generates a multi-dimensional scaling (MDS) plot for the ranking of gene sets across all the base methods used (Figure 5). Methods that rank gene sets similarly will appear closer together in this plot and from these plots we see that certain methods tend to cluster together across different gene set collections (Figure 5). 
 
-```{r mdsplot, fig.height=4, fig.width=8, fig.cap="Multi-dimensional scaling (MDS) plot for the ranking of the c2 and c5 gene sets on the Basal vs LP contrast from multiple gene set testing methods."}
+```{r mdsplot}
 plotMethods(gsa, gs.label = "c2", contrast = "BasalvsLP", 
          file.name = "mds_c2_BasalvsLP", format="png")
 plotMethods(gsa, gs.label = "c5BP", contrast = "BasalvsLP", 
@@ -358,7 +360,7 @@ plotSummary(gsa, gs.label = 3, contrast = 3,
 
 By default, *plotSummary* uses a gene set's `p.adj` score for the X-axis. This behaviour can be easily modified by assigning any of the available `sort.by` scores into the parameter `x.axis`, for example, `med.rank` can be used to create an EGSEA summary plot (Figure 7, left panel) as follows:
 
-```{r c2summaryplot2, fig.height=5, fig.width=10, fig.cap="Summary plots of the significance of selected gene sets in the c2 collection for the LP vs ML contrast. The x-axis was selected to be the `med.rank` score."}
+```{r c2summaryplot2}
 plotSummary(gsa, gs.label = 1, contrast = 3, 
          file.name = "summary_c2_LPvsML", 
          x.axis = "med.rank", format="png")
@@ -388,7 +390,7 @@ The *plotSummary* method has two useful parameters: (i) `use.names` that can be 
 The c5 collection of MSigDB and the Gene Ontology collection of GeneSetDB contain Gene Ontology (GO) terms. These collections are meant to be non-redundant, containing only a small subset of the entire GO and visualizing how these terms are related to each other can be informative. **EGSEA** utilizes functionality from the **topGO** package [@topGO] to generate GO graphs for the significant biological processes (BPs), cellular compartments (CCs) and molecular functions (MFs).
 The *plotGOGraph* method can generate such a display (Figure 9) as follows:
 
-```{r gographs, fig.height=5, fig.width=10, fig.cap=""}
+```{r gographs}
 plotGOGraph(gsa, gs.label="c5BP", contrast = 1, file.name="BasalvsLP-c5BP-top-", format="png")
 plotGOGraph(gsa, gs.label="c5CC", contrast = 1, file.name="BasalvsLP-c5CC-top-", format="png")
 ```
@@ -410,7 +412,7 @@ The colour of each bar is based on the regulation direction of the gene sets, i.
 
 When multiple conditions are studied in the experiment, the *summary heatmap* in **EGSEA** is a desirable way of visualization. The method *plotSummaryHeatmaps* generates a heatmap of the top $N$ gene sets in the comparative analysis across all experimental conditions. By default, 20 gene sets are selected based on the parameter `sort.by` when the analysis was invoked and the heat map values are the average log-fold changes at the set level for the genes that are regulated in the same direction as the set regulation direction, i.e., `avg.logfc.dir`. The parameters `number`, `sort.by` and `hm.vals` of the *plotSummaryHeatmaps* can be used to customize the summary heatmap. Additionally, the parameter `show.vals` can be used to display the values of a specific EGSEA score on the heatmap cells. Next, an example of the summary heatmap is generated for the MSigDB c2 collection: 
 
-```{r summaryheatmap, fig.height=5, fig.width=10, fig.cap="Summary heat maps for the top 20 gene sets from the c2 and KEGG collections obtained from the EGSEA comparative analysis."}
+```{r summaryheatmap}
 plotSummaryHeatmap(gsa, gs.label="c2", hm.vals = "avg.logfc.dir",
          file.name="summary_heatmaps_c2", format="png")
 plotSummaryHeatmap(gsa, gs.label="kegg", hm.vals = "avg.logfc.dir",
@@ -431,7 +433,7 @@ head(t)
 
 To generate an EGSEA HTML report for this dataset, you can either set `report=TRUE` when you invoke `egsea` or use the S4 method *generateReport* as follows:
 
-```{r htmlreport}
+```{r htmlreport, warning=FALSE}
 generateReport(gsa, number = 20, report.dir="./mam-rnaseq-egsea-report") 
 ```
 
@@ -543,12 +545,14 @@ gsam = egsea.ma(expr=expr, group=group,
 
 An HTML report that includes each of the gene set level and summary level plots shown individually for the RNA-seq analysis was generated. We complete our analysis by displaying the top ranked sets for the c2 collection from a comparative analysis across all contrasts.
 
-```{r mareport}
-generateReport(gsam, number = 20, report.dir="./mam-ma-egsea-report") 
+```{r mareport, warning=FALSE}
+generateReport(gsam, number = 20, report.dir="./mam-ma-egsea-report")
+```
+```{r matopsets}
 topSets(gsam, gs.label="c2", contrast = "comparison", names.only=TRUE)
 ```
 
-Reanalysis of this data retrieves similar c2 gene sets to those identified by analysis of RNA-seq data. These included the Lim *et al.* (2010) [@Lim:BreastCancerRes:2010] gene sets as well as those derived from populations with similar cellular origin (sets 4 and 7).
+The EGSEA report generated for this dataset is available online at <http://bioinf.wehi.edu.au/folders/EGSEA/mam-ma-egsea-report/index.html>. Reanalysis of this data retrieves similar c2 gene sets to those identified by analysis of RNA-seq data. These included the Lim *et al.* (2010) [@Lim:BreastCancerRes:2010] gene sets as well as those derived from populations with similar cellular origin (sets 4 and 7).
 
 # Discussion
 
@@ -559,7 +563,7 @@ The approach taken by EGSEA is underpinned by the diverse range of gene set test
 It is worth noting that users are free to choose a single GSE algorithm in their analysis rather than an ensemble across many if they prefer. In this scenario, users can still benefit from EGSEA's comprehensive reporting capability that can be easily incorporated in their gene expression analysis workflow.
 
 # Software and code used
-This workflow makes use of various packages from version 3.5 of the Bioconductor project, running on **R** version 3.4.0 or higher [@R]. The packages used and their version numbers are listed below. The **EGSEAdata** package contains gene signatures used by EGSEA. Code to perform this analysis is available from the Supplementary materials website (<http://bioinf.wehi.edu.au/folders/EGSEA/>) and as a Bioconductor workflow (<https://www.bioconductor.org/help/workflows/>).
+This workflow makes use of various packages from version 3.5 of the Bioconductor project, running on **R** version 3.4.0 or higher [@R]. The packages used and their version numbers are listed below. The **EGSEAdata** package contains gene signatures used by EGSEA. Code to perform this analysis is available in the **EGSEA123** package available as a Bioconductor workflow from  <https://www.bioconductor.org/help/workflows/>.
 
 
 ```{r softwareinfo}
@@ -575,4 +579,58 @@ The authors declare that they have no competing interests.
 # Grant information
 This worked was funded by National Health and Medical Research Council (NHMRC) Fellowship GNT1104924 to MER, Victorian State Government Operational Infrastructure Support and Australian Government NHMRC IRIISS.
 
-# References
+# ReferencesShow in New WindowClear OutputExpand/Collapse Output
+trying URL 'http://bioinf.wehi.edu.au/EGSEA/mam.rnaseq.rdata'
+Content type 'unknown' length 1786017 bytes (1.7 MB)
+==================================================
+downloaded 1.7 MB
+
+[1] "samples" "counts"  "genes"  
+[1] 14165     9
+  Basal LP ML L006 L008
+1     0  1  0    0    0
+2     0  0  1    0    0
+3     1  0  0    0    0
+4     1  0  0    1    0
+5     0  0  1    1    0
+6     0  1  0    1    0
+       Contrasts
+Levels  BasalvsLP BasalvsML LPvsML
+  Basal         1         1      0
+  LP           -1         0      1
+  ML            0        -1     -1
+  L006          0         0      0
+  L008          0         0      0
+Show in New WindowClear OutputExpand/Collapse Output
+[1] "genes"   "targets" "E"       "weights" "design" 
+Show in New WindowClear OutputExpand/Collapse Output
+[1] "ENTREZID" "SYMBOL"   "CHR"     
+Modify Chunk OptionsRun All Chunks AboveRun Current ChunkModify Chunk OptionsRun All Chunks AboveRun Current ChunkModify Chunk OptionsRun All Chunks AboveRun Current ChunkModify Chunk OptionsRun Current Chunk
+Show in New WindowClear OutputExpand/Collapse Output
+  # table of gene set collections in EGSEAdata
+| Database     | Collection            | Description                                            |
+|:------------:|:---------------------:|:------------------------------------------------------:|
+| MSigDB       | h Hallmarks           | Gene sets representing well-defined biological states. |
+|              | c1 Positional         | Gene sets by chromosome and cytogenetic band.          |
+|              | c2 Curated            | Gene sets obtained from a variety of sources,          |
+|              |                       | including online pathway databases                     |
+|              |                       | and the biomedical literature.                         |
+|              | c3 Motif              | Gene sets of potential targets regulated by            |
+|              |                       | transcription factors or microRNAs.                    |
+|              | c4 Computational      | Gene sets defined computationally by mining            |
+|              |                       | large collections of cancer-oriented microarray data.  |
+|              | c5 GO                 | Gene sets annotated by Gene Ontology (GO) terms.       | 
+|              | c6 Oncogenic          | Gene sets of the major cellular pathways               |
+|              |                       | disrupted in cancer.                                   |
+|              | c7 Immunologic        | Gene sets representing the different cell              |
+|              |                       | types and stimulations relevant to the immune system.  |
+|:------------:|:---------------------:|:------------------------------------------------------:|
+|   KEGG       | Signalling            |                                                        |
+|              | Disease               | Gene sets obtained from the KEGG database.             |
+|              | Metabolic             |                                                        |
+|:------------:|:---------------------:|:------------------------------------------------------:|
+|   GeneSetDB  |  Pathway              |                                                        |
+|              |  Disease              |                                                        |
+|              |  Drug                 | Gene sets obtained from various online databases.      |
+|              |  Regulation           |                                                        |
+|              |  GO Term              |                                                        |
