@@ -47,8 +47,7 @@ There are two levels of parallelism in EGSEA: (1) parallelism at the method-leve
 methods. 
 
 
-EGSEA provides access to a diverse range of gene signature collections through the **EGSEAdata** package that includes more than 25,000 gene sets for human and mouse.
-Collections are organised according to their database sources (Table 1). For example, MSigDB [@Subramanian2005] includes a number of collections (Hallmark (h) and c1-c7) that explore different biological themes ranging from very broad (h, c2, c5) through to more specialised ones focusing on cancer (c4, c6) and immunology (c7). The other main sources of GeneSetDB [@Araki2012] and KEGG [@Kanehisa2000] have similar collections focusing on different biological characteristics. Which collections are selected in any given analysis should always be guided by the biological question of interest. The MSigDB c2 and c5 collections are the most widely used in our own analysis practice, spanning a wide range of biological processes that can often reveal new biological insights when applied to a given data set.
+EGSEA provides access to a diverse range of gene signature collections through the **EGSEAdata** package that includes more than 25,000 gene sets for human and mouse organised according to their database sources (Table 1). For example, MSigDB [@Subramanian2005] includes a number of collections (Hallmark (h) and c1-c7) that explore different biological themes ranging from very broad (h, c2, c5) through to more specialised ones focusing on cancer (c4, c6) and immunology (c7). The other main sources of GeneSetDB [@Araki2012] and KEGG [@Kanehisa2000] have similar collections focusing on different biological characteristics. Which collections are selected in any given analysis should always be guided by the biological question of interest. The MSigDB c2 and c5 collections are the most widely used in our own analysis practice, spanning a wide range of biological processes that can often reveal new biological insights when applied to a given data set.
 
 ```{r table2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 tabl <- "  # table of gene set collections available in EGSEAdata
@@ -486,7 +485,7 @@ dim(data)
 
 ### Preparing microarray data for EGSEA testing
 
-As before, we need to set up an appropriate linear model and contrasts matrix to look for differences between Basal and LP, Basal and ML and LP and ML populations. A batch term is included in the linear model to account for differences in expression that are attributable to the day the experiment was run.
+As before, we need to set up an appropriate linear model [@Smyth:SAGMB:2004] and contrasts matrix to look for differences between the Basal and LP, Basal and ML and LP and ML populations. A batch term is included in the linear model to account for differences in expression that are attributable to the day the experiment was run.
 
 ```{r malinearmodel}
 head(data$genes)
