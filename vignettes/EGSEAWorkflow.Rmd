@@ -558,7 +558,7 @@ The EGSEA report generated for this dataset is available online at <http://bioin
 # Discussion
 
 In this workflow article, we have demonstrated how to use the EGSEA package to combine the results obtained from many gene signature databases and multiple GSE methods to find an ensemble solution.
-A key benefit of an EGSEA analysis is the detailed and comprehensive HTML report that includes tables prioritising gene signatures according to the user specified analysis options, and both gene set specific and summary graphics.
+A key benefit of an EGSEA analysis is the detailed and comprehensive HTML report that can be shared with collaborators to help them interpret their data. This report includes tables prioritising gene signatures according to the user specified analysis options, and both gene set specific and summary graphics, each of which can be generated individually using specific R commands. 
 The approach taken by EGSEA is facilitated by the diverse range of gene set testing algorithms and plotting capabilities available within Bioconductor.
 EGSEA has been tailored to suit a **limma**-based differential expression analysis which is an extremely popular and flexible workflow for transcriptomic data. 
 It is worth noting that users are free to choose a single GSE algorithm in their analysis rather than an ensemble across many if they prefer. In this scenario, users can still benefit from EGSEA's comprehensive reporting capability that can be easily incorporated in their gene expression analysis workflow.
