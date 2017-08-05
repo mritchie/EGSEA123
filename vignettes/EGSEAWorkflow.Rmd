@@ -433,7 +433,7 @@ head(t)
 
 To generate an EGSEA HTML report for this dataset, you can either set `report=TRUE` when you invoke `egsea` or use the S4 method *generateReport* as follows:
 
-```{r htmlreport, warning=FALSE}
+```{r htmlreport, warning=FALSE, eval=FALSE}
 generateReport(gsa, number = 20, report.dir="./mam-rnaseq-egsea-report") 
 ```
 
@@ -528,7 +528,7 @@ names(gs.annots)
 
 The same 11 base methods used previously in the RNA-seq analysis were selected for the ensemble testing of the microarray data using the function `egsea.ma`. Gene sets were again prioritised by their median rank across the 11 methods.
 
-```{r maegsea}
+```{r maegsea, eval=FALSE}
 baseMethods = egsea.base()[-2]
 baseMethods
 
@@ -546,10 +546,10 @@ gsam = egsea.ma(expr=expr, group=group,
 An HTML report that includes each of the gene set level and summary level plots shown individually for the RNA-seq analysis was then created using the `generateReport` function.
 We complete our analysis by displaying the top ranked sets for the c2 collection from a comparative analysis across all contrasts.
 
-```{r mareport, warning=FALSE}
+```{r mareport, warning=FALSE, eval=FALSE}
 generateReport(gsam, number = 20, report.dir="./mam-ma-egsea-report")
 ```
-```{r matopsets}
+```{r matopsets, eval=FALSE}
 topSets(gsam, gs.label="c2", contrast = "comparison", names.only=TRUE)
 ```
 

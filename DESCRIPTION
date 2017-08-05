@@ -1,7 +1,7 @@
 Package: EGSEA123
 Title: Easy and efficient ensemble gene set testing with EGSEA
-Version: 0.99.5
-Date: 2017-08-04
+Version: 0.99.6
+Date: 2017-08-05
 Authors@R: c(person(role=c("aut", "cre"), "Monther", "Alhamdoosh", email = "monther.alhamdoosh@csl.com.au"),
                       person(role="aut", "Charity", "Law", email = "law@wehi.edu.au"), 
                       person(role="aut", "Luyi", "Tian", email = "tian.l@wehi.edu.au"),
@@ -9,7 +9,7 @@ Authors@R: c(person(role=c("aut", "cre"), "Monther", "Alhamdoosh", email = "mont
                       person(role="aut", "Milica", "Ng", email = "milica.ng@csl.com.au"),
                       person(role="aut", "Matthew", "Ritchie", email = "mritchie@wehi.edu.au"))
 Description: R package that supports the F1000Research workflow article `Easy and efficient ensemble gene set testing with EGSEA', Alhamdoosh et al. (2017).
-Depends: R (>= 3.4.0), EGSEA (>= 1.5.2), limma, edgeR
+Depends: R (>= 3.4.0), EGSEA (>= 1.5.1), limma, edgeR
 License: Artistic-2.0
 Encoding: UTF-8
 LazyData: True
