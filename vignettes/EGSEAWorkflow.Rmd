@@ -137,7 +137,7 @@ For further information on preprocessing, see Law *et al.* (2016) [@Law:F1000Res
 
 ### Gene set testing
 
-The EGSEA algorithm makes use of the *voom* object, a design matrix and an optional contrasts matrix. The design matrix describes how the samples in the experiment relate to the coefficients estimated by the linear model.  The contrasts matrix then compares two or more of these coefficients to allow relative assessment of differential expression and is required if the design matrix does not have an intercept term, as in this case. Base methods that utilize linear models such as those from **limma** and **GSVA** (*gsva*, *plage*, *zscore* and *ssgsea*) make use of the design and contrasts matrices directly. For methods that do not support linear models, these two matrices are used to extract the group information for each contrast. 
+The EGSEA algorithm makes use of the *voom* object, a design matrix and an optional contrasts matrix. The design matrix describes how the samples in the experiment relate to the coefficients estimated by the linear model.  The contrasts matrix then compares two or more of these coefficients to allow relative assessment of differential expression. Base methods that utilize linear models such as those from **limma** and **GSVA** (*gsva*, *plage*, *zscore* and *ssgsea*) make use of the design and contrasts matrices directly. For methods that do not support linear models, these two matrices are used to extract the group information for each comparison. 
 
 #### 1. Exploring, selecting and indexing gene set collections
 
