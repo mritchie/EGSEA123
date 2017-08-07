@@ -126,7 +126,7 @@ contr.matrix = makeContrasts(
 head(contr.matrix)
 ```
 
-The `voom` function [@Law:GenomeBiol:2014] from the **limma** package converts counts to log-counts-per-million (log-cpm) and calculates observation-level precision weights. The *voom* object (`v`) contains log-cpm and gene information used by all of the methods in the EGSEA analysis below. The precision `weights` stored within `v` are also used by the *camera*, *roast* and *fry* gene set testing methods.
+The `voom` function [@Law:GenomeBiol:2014] from the **limma** package converts counts to log-counts-per-million (log-cpm) and calculates observation-level precision weights. The *voom* object (`v`) contains normalized log-cpm values and gene information used by all of the methods in the EGSEA analysis below. The precision `weights` stored within `v` are also used by the *camera*, *roast* and *fry* gene set testing methods.
 
 ```{r setup2, eval=TRUE}
 v = voom(x, design, plot=FALSE)
@@ -137,7 +137,7 @@ For further information on preprocessing, see Law *et al.* (2016) [@Law:F1000Res
 
 ### Gene set testing
 
-The EGSEA algorithm requires the *voom* object, a design matrix and an optional contrast matrix. The normalized expression matrix is extracted from the *voom* object. The design matrix describes how the samples in the experiment relate to the coefficients estimated by the linear model. The contrast matrix compares two or more coefficients to allow relative assessment of differential expression and is required if the design matrix does not have an intercept. Base methods that utilize linear models such as those from **limma** and **GSVA** (*gsva*, *plage*, *zscore* and *ssgsea*) make use of the design and contrast matrices directly. For methods that do not support linear models, these two matrices are used to extract the group information for each contrast. 
+The EGSEA algorithm makes use of the *voom* object, a design matrix and an optional contrasts matrix. The design matrix describes how the samples in the experiment relate to the coefficients estimated by the linear model.  The contrasts matrix then compares two or more of these coefficients to allow relative assessment of differential expression and is required if the design matrix does not have an intercept term, as in this case. Base methods that utilize linear models such as those from **limma** and **GSVA** (*gsva*, *plage*, *zscore* and *ssgsea*) make use of the design and contrasts matrices directly. For methods that do not support linear models, these two matrices are used to extract the group information for each contrast. 
 
 #### 1. Exploring, selecting and indexing gene set collections
 
@@ -234,7 +234,7 @@ Although `p.adj` is the default option for sorting EGSEA results for convenience
 
 #### 3. Ensemble testing with EGSEA
 
-Next, the EGSEA analysis is performed using the `egsea` function that takes a *voom* object, a contrast matrix, collections of gene sets and other run parameters as follows: 
+Next, the EGSEA analysis is performed using the `egsea` function that takes a *voom* object, a contrasts matrix, collections of gene sets and other run parameters as follows: 
 
 ```{r egseatest}
 gsa = egsea(voom.results=v, contrasts=contr.matrix,  
@@ -334,7 +334,7 @@ plotPathway(gsa, gene.set = "Vascular smooth muscle contraction",
              file.name = "Vascular_smooth_muscle_contraction_cmp")
 ```
 
-![Pathway map for *Vascular smooth muscle contraction* (KEGG pathway mmu04270) with log-fold-changes across three experimental contrasts shown for each gene in the same order left to right that they appear in the contrast matrix (i.e. Basal vs LP, Basal vs ML and LP vs ML).](mmu04270.pathview.multi.png)
+![Pathway map for *Vascular smooth muscle contraction* (KEGG pathway mmu04270) with log-fold-changes across three experimental contrasts shown for each gene in the same order left to right that they appear in the contrasts matrix (i.e. Basal vs LP, Basal vs ML and LP vs ML).](mmu04270.pathview.multi.png)
 
 The comparative pathway map shows the log-fold-changes for each gene in each contrast by dividing the gene nodes on the map into multiple columns, one for each contrast (Figure 4).
 
@@ -407,7 +407,7 @@ Another way to visualize results at the experiment level is via the summary *bar
 For example, the top 20 gene sets of the comparative analysis carried out on the c2 collection of MSigDB can be visualized using a *bar plot* (Figure 10) as follows:
 
 ```{r summarybarplot}
-plotBars(gsa, gs.label = "c2", contrast = "comparison", file.name="comparison-c2-bars", format="png")
+plotBars(gsa, gs.label = "c2", contrast="comparison", file.name="comparison-c2-bars", format="png")
 ```
 
 The colour of each bar is based on the regulation direction of the gene sets, i.e., red for up-regulated, blue for down-regulated and purple for neutral regulation (in the case of comparative analysis of experimental contrasts that have show opposite behaviours) (Figure 11).
@@ -555,7 +555,7 @@ We complete our analysis by displaying the top ranked sets for the c2 collection
 generateReport(gsam, number = 20, report.dir="./mam-ma-egsea-report")
 ```
 ```{r matopsets, eval=FALSE}
-topSets(gsam, gs.label="c2", contrast = "comparison", names.only=TRUE)
+topSets(gsam, gs.label="c2", contrast="comparison", names.only=TRUE)
 ```
 
 The EGSEA report generated for this dataset is available online at <http://bioinf.wehi.edu.au/EGSEA/mam-ma-egsea-report/index.html>. Reanalysis of this data retrieves similar c2 gene sets to those identified by analysis of RNA-seq data. These included the `LIM` gene sets as well as those derived from populations with similar cellular origin (sets 4 and 7).
