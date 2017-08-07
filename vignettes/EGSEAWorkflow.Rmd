@@ -137,6 +137,8 @@ For further information on preprocessing, see Law *et al.* (2016) [@Law:F1000Res
 
 ### Gene set testing
 
+The EGSEA algorithm requires the *voom* object, a design matrix and an optional contrast matrix. The normalized expression matrix is extracted from the *voom* object. The design matrix describes how the samples in the experiment relate to the coefficients estimated by the linear model. The contrast matrix compares two or more coefficients to allow relative assessment of differential expression and is required if the design matrix does not have an intercept. Base methods that utilize linear models such as those from **limma** and **GSVA** (*gsva*, *plage*, *zscore* and *ssgsea*) make use of the design and contrast matrices directly. For methods that do not support linear models, these two matrices are used to extract the group information for each contrast. 
+
 #### 1. Exploring, selecting and indexing gene set collections
 
 The package **EGSEAdata** includes more than 25,000 gene sets organized in collections depending on their database sources. 
@@ -187,6 +189,7 @@ Objects of class *GSCollectionIndex* store for each gene set the Entrez gene IDs
 slotNames(gs.annots$c2)
 ```
 Other EGSEA functions such as `buildCustomIdx`, `buildGMTIdx`, `buildKEGGIdx`, `buildMSigDBIdx` and `buildGeneSetDBIdx` can be also used to build gene set collection indexes.
+The functions `buildCustomIdx` and `buildGMTIdx` were written to allow users to run EGSEA on gene set collections that may have been curated within their lab or downloaded from public databases. Example databases include, ENCODE Gene Set Hub (EGSH), which is a growing resource of gene sets derived from high quality ENCODE profiling experiments encompassing hundreds of DNase hypersensitivity, histone modification and transcription factor target experiments [@EncodeHub2017]. EGSH is available from <https://sourceforge.net/projects/encodegenesethub/>. Other resources include PathwayCommons (<http://www.pathwaycommons.org/>) \cite{pathwayCommons2011} or the **KEGGREST** [@KEGGREST2017] package that provides access to up-to-date KEGG pathways across many species. 
 
 #### 2. Configuring EGSEA
 
@@ -214,7 +217,7 @@ baseMethods
 
 Although, different combinations of base methods might produce different results, it has been found via simulation that including more methods gives better performance [@Alhamdoosh:Bioinformatics:2016].
 
-Since each base method generates different $p$-values, EGSEA supports six different methods for combining individual $p$-values (*Wilkinson* [@Wilkinson1954] is default), which can be listed as follows:
+Since each base method generates different $p$-values, EGSEA supports six different methods from the **metap** package [@metap2017] for combining individual $p$-values (*Wilkinson* [@Wilkinson1954] is default), which can be listed as follows: 
 
 ```{r combine}
 egsea.combine()
@@ -239,6 +242,8 @@ gsa = egsea(voom.results=v, contrasts=contr.matrix,
          baseGSEAs=baseMethods, sort.by="med.rank",
          num.threads = 8, report = FALSE)
 ```
+
+In situations where the design matrix includes an intercept, a vector of integers that specify the columns of the design matrix to test using EGSEA can be passed to the `contrasts` argument. If this parameter is `NULL`, all pairwise comparisons based on `v$targets$group` are created, assuming that `group` is the primary factor in the design matrix. Likewise, all the coefficients of the primary factor are used if the design matrix has an intercept.
 
 The running time of the EGSEA test depends on the base methods selected and whether report generation is enabled or not. The latter significantly increases the run time, particularly if the argument `display.top` is assigned a large value ($>$ 20) and/or a large number of gene set collections are selected. EGSEA reporting functionality generates set-level plots for every gene set as well as collection-level plots which are both time consuming processes. 
 
@@ -347,7 +352,7 @@ plotMethods(gsa, gs.label = "c5BP", contrast = "BasalvsLP",
 
 ![Multi-dimensional scaling (MDS) plot for the ranking of the c2](mds_c2_BasalvsLP.png)![and c5 gene sets on the Basal vs LP contrast for multiple gene set testing methods.](mds_c5_BasalvsLP.png)
 
-The significance of each gene set in a given collection for a selected contrast can be visualized using EGSEA's summary plot. The summary plot visualizes the gene sets as bubbles based on the $-\log_{10}{(p\mbox{-}value)}$ (X-axis) and the average absolute log fold-change of the set genes (Y-axis). The sets that appear towards the top-right corner of this plot are most likely to be biologically relevant. EGSEA generates two types of summary plots: the directional summary plot, which colours the bubbles based on the regulation direction of the gene set (the direction of the majority of genes), and the ranking summary plot, which colours the bubbles based on the gene set ranking in a given collection (according to the `sort.by` argument). The bubble size is based on the EGSEA significance score in the former plot and the gene set size in the latter. For example, the summary plots of the KEGG pathways for the LP vs ML contrast show few significant pathways (Figure 6). The blue colour labels on the directional plot represents gene sets that do not appear in the top $10$ gene sets that are selected based on the `sort.by` argument while their EGSEA significance scores are among the top $5$ in the entire collection. 
+The significance of each gene set in a given collection for a selected contrast can be visualized using EGSEA's summary plot. The summary plot visualizes the gene sets as bubbles based on the $-\log_{10}{(p\mbox{-}value)}$ (X-axis) and the average absolute log fold-change of the set genes (Y-axis). The sets that appear towards the top-right corner of this plot are most likely to be biologically relevant. EGSEA generates two types of summary plots: the directional summary plot, which colours the bubbles based on the regulation direction of the gene set (the direction of the majority of genes), and the ranking summary plot, which colours the bubbles based on the gene set ranking in a given collection (according to the `sort.by` argument). The bubble size is based on the EGSEA significance score in the former plot and the gene set size in the latter. For example, the summary plots of the KEGG pathways for the LP vs ML contrast show few significant pathways (Figure 6). The blue colour labels on the directional plot represents gene sets that do not appear in the top $10$ gene sets that are selected based on the `sort.by` argument while their EGSEA significance scores are among the top $5$ in the entire collection. This is used to identify gene sets with high significance scores that were not captured by the `sort.by` score. 
 The gene set IDs and more information about each set can be found in the EGSEA HTML report generated later.
 
 ```{r keggsummaryplot1}
