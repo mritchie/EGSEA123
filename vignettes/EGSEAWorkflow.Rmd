@@ -158,6 +158,7 @@ To highlight the capabilities of the **EGSEA** package, the KEGG pathways, c2 (c
 
 Next, an index is built for each gene set collection using the EGSEA indexing functions to link the genes in the different gene set collections to the rows of our RNA-seq gene expression matrix. 
 Indexes for the c2 and c5 collections from MSigDB and for the KEGG pathways are built using the `buildIdx` function which relies on Entrez identifiers as its key.
+In the **EGSEAdata** gene set collections, Entrez identifiers are used as they are widely adopted by the different source databases and tend to be more consistent and robust since there is one identifier per gene in a gene set. It is also relatively easy to convert from other gene IDs into Entrez IDs.
 
 ```{r loadegsea, message=FALSE, warning=FALSE}
 library(EGSEA)
@@ -447,7 +448,7 @@ The HTML report is a convenient means of organising all of the results generated
 It can easily be shared with collaborators to allow them to explore their results more fully.
 Interactive tables of results via the **DT** package (<https://CRAN.R-project.org/package=DT>) and summary plots from **plotly** (<https://CRAN.R-project.org/package=plotly>) are integrated into the report using **htmlwidgets** (<https://CRAN.R-project.org/package=htmlwidgets>) and can be added by setting `interactive = TRUE` in the command above. This option significantly increases both the run time and size of the final report due to the large number of gene sets in most collections. 
 
-![EGSEA HTML report main page.](egsea_report_small.png)
+![EGSEA HTML report main page. This summary page details the analysis parameters (methods combined and ranking options selected) and organises the gene set analysis results by contrast, with further separation by gene set collection. The final section on this page presents results from the comparative analysis. For each contrast and gene set collection analysed, links to tables of results and plots are provided.](egsea_report_small.png)
 
 This example completes our overview of EGSEA's gene set testing and plotting capabilities for RNA-seq data.
 The same functionality can also be used for gene set testing of microarray data. Readers can refer to the vignette and/or the reference manual of the EGSEA package available at the Bioconductor website for more technical details on each of the above methods and classes.
@@ -480,7 +481,7 @@ Next the `neqc` function in **limma** is used to carry out *normexp* background 
 data = neqc(data)
 ```
 
-We then filter out probes that are consistently non-expressed or lowly expressed throughout all samples as they are uninformative in downstream analysis. Our threshold for expression requires probes to have a detection $p$-value of less than 0.05 in at least 5 samples (the number of samples within each group). We next remove genes without a valid Entrez ID and in cases where there are multiple probes targeting different isoforms of the same gene, select the probe with highest average expression across all samples as the representative one to use in the EGSEA analysis. This leaves 7,123 probes for further analysis.
+We then filter out probes that are consistently non-expressed or lowly expressed throughout all samples as they are uninformative in downstream analysis. Our threshold for expression requires probes to have a detection $p$-value of less than 0.05 in at least 5 samples (the number of samples within each group). We next remove genes without a valid Entrez ID and in cases where there are multiple probes targeting different isoforms of the same gene, select the probe with highest average expression as the representative one to use in the EGSEA analysis. This leaves 7,123 probes for further analysis.
 
 ```{r mafilter}
 table(targets$Celltype)

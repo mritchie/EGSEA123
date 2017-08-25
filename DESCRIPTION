@@ -1,6 +1,6 @@
 Package: EGSEA123
 Title: Easy and efficient ensemble gene set testing with EGSEA
-Version: 0.99.11
+Version: 0.99.12
 Date: 2017-08-20
 Authors@R: c(person(role=c("aut", "cre"), "Monther", "Alhamdoosh", email = "monther.alhamdoosh@csl.com.au"),
                       person(role="aut", "Charity", "Law", email = "law@wehi.edu.au"), 
