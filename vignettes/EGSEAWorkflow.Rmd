@@ -468,7 +468,7 @@ The second dataset analysed in this workflow comes from  Lim *et al.* (2010) [@L
 
 To analyse this dataset, we begin by unzipping the files downloaded from <http://bioinf.wehi.edu.au/EGSEA/arraydata.zip> into the current working directory. Illumina BeadArray data can be read in directly using the `readIDAT` and `readBGX` functions from the **illuminaio** package [@Smith:F1000Research:2013]. However, a more convenient way is via the `read.idat` function in **limma** which uses these **illuminaio** functions and outputs the data as an *EListRaw* object for further processing.
 
-```{r mareadidats}
+```{r mareadidats, eval=FALSE}
 library(limma)
 url = "http://bioinf.wehi.edu.au/EGSEA/arraydata.zip"
 utils::download.file(url, destfile="arraydata.zip", mode="wb")
@@ -484,13 +484,13 @@ colnames(data) = targets$Sample
 
 Next the `neqc` function in **limma** is used to carry out *normexp* background correction and quantile normalisation on the raw intensity values using negative control probes [@shi2010neqc]. This is followed by $\log_2$-transformation of the normalised intensity values and removal of the control probes. 
 
-```{r manormalize}
+```{r manormalize, eval=FALSE}
 data = neqc(data)
 ```
 
 We then filter out probes that are consistently non-expressed or lowly expressed throughout all samples as they are uninformative in downstream analysis. Our threshold for expression requires probes to have a detection $p$-value of less than 0.05 in at least 5 samples (the number of samples within each group). We next remove genes without a valid Entrez ID and in cases where there are multiple probes targeting different isoforms of the same gene, select the probe with highest average expression as the representative one to use in the EGSEA analysis. This leaves 7,123 probes for further analysis.
 
-```{r mafilter}
+```{r mafilter, eval=FALSE}
 table(targets$Celltype)
 keep.exprs = rowSums(data$other$Detection<0.05)>=5
 table(keep.exprs)
@@ -515,7 +515,7 @@ head(probe.annot)
 
 As before, we need to set up an appropriate linear model [@Smyth:SAGMB:2004] and contrasts matrix to look for differences between the Basal and LP, Basal and ML and LP and ML populations. A batch term is included in the linear model to account for differences in expression that are attributable to the day the experiment was run.
 
-```{r malinearmodel}
+```{r malinearmodel, eval=FALSE}
 head(data1$targets)
 experiment = as.character(data1$targets$Experiment)
 design = model.matrix(~0 + group + experiment)
