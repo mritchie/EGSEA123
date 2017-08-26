@@ -27,24 +27,28 @@ output:
 
 # Abstract
 
-Gene set enrichment analysis encompasses a broad range of methods for prioritising the biological processes perturbed in genomic datasets. The Bioconductor project hosts more than 80 software packages that identify with the task of gene set and pathway level analysis. The most common application of gene set enrichment analysis is to aid in the interpretation of the long lists of genes that frequently arise from a differential expression analysis by overlaying externally curated gene signature collections to reveal higher level biological themes. A key challenge in such an analysis is to choose an appropriate testing method and then visualize the expression data from enriched gene sets.
+Gene set enrichment analysis highlights the biological processes altered in genomic data sets. 
+The Bioconductor project hosts over 80 software packages capable of gene set analysis, most of which search for enriched signatures amongst differentially regulated genes to reveal higher level biological themes.
+With so many different methods on offer, choosing the best algorithm and visualization approach can be challenging. 
+This workflow demonstrates use of the **EGSEA** package that is intended to solve this problem by combining the results from up to 12 prominent gene set testing algorithms to obtain a consensus ranking with biologically relevant results.
+It shows how **EGSEA** can extend a **limma**-based differential expression analysis for RNA-seq and microarray data using experiments that profile 3 distinct cell populations important for studying the origins of breast cancer. 
+Following data normalization and set-up of an appropriate linear model for differential expression analysis, **EGSEA** builds gene signature specific indexes that link a wide range of mouse or human gene set collections obtained from MSigDB, GeneSetDB and KEGG to the gene expression data being investigated. 
+**EGSEA** is then configured and the ensemble enrichment analysis run, returning an object that can be queried using several S4 methods for ranking gene sets and visualizing results via heatmaps, KEGG pathway views, GO graphs, scatter plots and bar plots. 
+Finally, an HTML report that combines these displays can fast-track the sharing of results with collaborators, and thus expedite downstream biological validation. 
+**EGSEA** is simple to use and can be easily integrated with existing gene expression analysis pipelines for both human and mouse data.
 
-This workflow article demonstrates use of the **EGSEA** package that extends a **limma**-based differential expression analysis for both RNA-seq and microarray data obtained from mouse mammary gland epithelial cell populations. Starting with normalized data, EGSEA builds gene signature specific indexes that link a wide range of mouse or human gene set collections obtained from MSigDB, GeneSetDB and KEGG to the gene expression data being investigated. EGSEA then uses an ensemble approach for gene set testing that combines results from up to 12 prominent algorithms available in Bioconductor in order to arrive at a consensus ranking. It returns an object that can be queried using several S4 methods for ranking gene sets and visualizing results in various ways, via heatmaps, KEGG pathway views, GO graphs, scatter plots and bar plots. Finally, an HTML report that combines these displays provides a convenient means of sharing results with collaborators, allowing them to explore their biological relevance. **EGSEA** is simple to use and can be easily integrated with existing gene expression analysis pipelines for mouse and human data.
 
 # Introduction
 
 Gene set enrichment analysis allows researchers to efficiently extract biological insights from long lists of differentially expressed genes by interrogating them at a systems level. In recent years, there has been a proliferation of gene set enrichment (GSE)  analysis methods released through the Bioconductor project [@Huber:NatureMethods:2015] together with a steady increase in the number of gene set collections available through online databases such as MSigDB [@Subramanian2005], GeneSetDB [@Araki2012] and KEGG [@Kanehisa2000]. 
 
 In an effort to unify these computational methods and knowledge-bases, the EGSEA R/Bioconductor package was developed.
-EGSEA, which stands for *Ensemble of Gene Set Enrichment Analysis* [@Alhamdoosh:Bioinformatics:2016] combines the results from multiple algorithms to arrive at a consensus gene set ranking to identify biological themes and pathways perturbed in an experiment. EGSEA calculates seven statistics to combine the individual gene set statistics of base GSE methods to rank biologically relevant gene sets. The current version of the **EGSEA** package [@EGSEA:2016] utilizes the analysis results of up to twelve prominent GSE algorithms that include: *ora* [@Tavazoie1999], *globaltest* [@Goeman2004], *plage*
+EGSEA, which stands for *Ensemble of Gene Set Enrichment Analyses* [@Alhamdoosh:Bioinformatics:2016] combines the results from multiple algorithms to arrive at a consensus gene set ranking to identify biological themes and pathways perturbed in an experiment. EGSEA calculates seven statistics to combine the individual gene set statistics of base GSE methods to rank biologically relevant gene sets. The current version of the **EGSEA** package [@EGSEA:2016] utilizes the analysis results of up to twelve prominent GSE algorithms that include: *ora* [@Tavazoie1999], *globaltest* [@Goeman2004], *plage*
 [@Tomfohr2005], *safe* [@Barry2005], *zscore* [@Lee2008], *gage* [@Luo2009], *ssgsea* [@Barbie2009], *padog* [@Tarca2012], *gsva* [@Hanzelmann2013], *camera* [@Wu2012], *roast* [@Wu2010] and *fry* [@Wu2010].
 The *ora*, *gage*, *camera* and *gsva* methods depend on a *competitive* null hypothesis which assumes the genes in a set do not have a stronger association with the experimental condition compared to randomly chosen genes outside the set.
 The remaining eight methods are based on a *self-contained* null hypothesis that only considers genes within a set and again assumes that they have no association with the experimental condition.
-The *plage*, *zscore* and *ssgsea* algorithms are implemented in the **GSVA** package and *camera*, *fry* and *roast* are implemented in the **limma** package [@Ritchie:NAR:2015]. 
-The **ora** method is implemented using the `phyper` function from the **stats** package [@R], which estimates the hypergeometric distribution for a $2 \times 2$ contingency table. The remaining algorithms are implemented in Bioconductor packages of the same name. A wrapper function is provided for each individual GSE method to utilize this existing R code and create a universal interface for all methods. 
 
-
-EGSEA provides access to a diverse range of gene signature collections through the **EGSEAdata** package that includes more than 25,000 gene sets for human and mouse organised according to their database sources (Table 1). For example, MSigDB [@Subramanian2005] includes a number of collections (Hallmark (h) and c1-c7) that explore different biological themes ranging from very broad (h, c2, c5) through to more specialised ones focusing on cancer (c4, c6) and immunology (c7). The other main sources are GeneSetDB [@Araki2012] and KEGG [@Kanehisa2000] which have similar collections focusing on different biological characteristics (Table 1). The choice of collection/s in any given analysis should always be guided by the biological question of interest. The MSigDB c2 and c5 collections are the most widely used in our own analysis practice, spanning a wide range of biological processes and can often reveal new biological insights when applied to a given dataset.
+EGSEA provides access to a diverse range of gene signature collections through the **EGSEAdata** package that includes more than 25,000 gene sets for human and mouse organised according to their database sources (Table 1). For example, MSigDB [@Subramanian2005] includes a number of collections (Hallmark (h) and c1-c7) that explore different biological themes ranging from very broad (h, c2, c5) through to more specialised ones focusing on cancer (c4, c6) and immunology (c7). The other main sources are GeneSetDB [@Araki2012] and KEGG [@Kanehisa2000] which have similar collections focusing on different biological characteristics (Table 1). The choice of collection/s in any given analysis should of course be guided by the biological question of interest. The MSigDB c2 and c5 collections are the most widely used in our own analysis practice, spanning a wide range of biological processes and can often reveal new biological insights when applied to a given dataset.
 
 ```{r table2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 tabl <- "  # Table of gene set collections available in the EGSEAdata package
@@ -157,8 +161,8 @@ info$msigdb$info$collections
 To highlight the capabilities of the **EGSEA** package, the KEGG pathways, c2 (curated gene sets) and c5 (Gene Ontology gene sets) collections from the MSigDB database are selected. 
 
 Next, an index is built for each gene set collection using the EGSEA indexing functions to link the genes in the different gene set collections to the rows of our RNA-seq gene expression matrix. 
-Indexes for the c2 and c5 collections from MSigDB and for the KEGG pathways are built using the `buildIdx` function which relies on Entrez identifiers as its key.
-In the **EGSEAdata** gene set collections, Entrez identifiers are used as they are widely adopted by the different source databases and tend to be more consistent and robust since there is one identifier per gene in a gene set. It is also relatively easy to convert from other gene IDs into Entrez IDs.
+Indexes for the c2 and c5 collections from MSigDB and for the KEGG pathways are built using the `buildIdx` function which relies on Entrez gene IDs as its key.
+In the **EGSEAdata** gene set collections, Entrez IDs are used as they are widely adopted by the different source databases and tend to be more consistent and robust since there is one identifier per gene in a gene set. It is also relatively easy to convert other gene IDs into Entrez IDs.
 
 ```{r loadegsea, message=FALSE, warning=FALSE}
 library(EGSEA)
@@ -181,12 +185,12 @@ names(s)
 names(s$SMID_BREAST_CANCER_LUMINAL_A_DN)
 ```
 
-Objects of class *GSCollectionIndex* store for each gene set the Entrez gene IDs in the slot `original`, the indexes in the slot `idx` and additional annotation for each set in the slot `anno`
+Objects of class *GSCollectionIndex* store for each gene set the Entrez gene IDs in the slot `original`, the indexes in the slot `idx` and additional annotation for each set in the slot `anno`.
 
 ```{r indexclass}
 slotNames(gs.annots$c2)
 ```
-Other EGSEA functions such as `buildCustomIdx`, `buildGMTIdx`, `buildKEGGIdx`, `buildMSigDBIdx` and `buildGeneSetDBIdx` can be also used to build gene set collection indexes. The functions `buildCustomIdx` and `buildGMTIdx` were written to allow users to run EGSEA on gene set collections that may have been curated within their lab or downloaded from public databases. Example databases include, ENCODE Gene Set Hub (available from <https://sourceforge.net/projects/encodegenesethub/>), which is a growing resource of gene sets derived from high quality ENCODE profiling experiments encompassing hundreds of DNase hypersensitivity, histone modification and transcription factor binding experiments [@EncodeHub2017]. Other resources include PathwayCommons (<http://www.pathwaycommons.org/>) \cite{pathwayCommons2011} or the **KEGGREST** [@KEGGREST2017] package that provides access to up-to-date KEGG pathways across many species. 
+Other EGSEA functions such as `buildCustomIdx`, `buildGMTIdx`, `buildKEGGIdx`, `buildMSigDBIdx` and `buildGeneSetDBIdx` can be also used to build gene set collection indexes. The functions `buildCustomIdx` and `buildGMTIdx` were written to allow users to run EGSEA on gene set collections that may have been curated within a lab or downloaded from public databases and allow use of gene identifiers other than Entrez IDs. Example databases include, ENCODE Gene Set Hub (available from <https://sourceforge.net/projects/encodegenesethub/>), which is a growing resource of gene sets derived from high quality ENCODE profiling experiments encompassing hundreds of DNase hypersensitivity, histone modification and transcription factor binding experiments [@EncodeHub2017]. Other resources include PathwayCommons (<http://www.pathwaycommons.org/>) \cite{pathwayCommons2011} or the **KEGGREST** [@KEGGREST2017] package that provides access to up-to-date KEGG pathways across many species. 
 
 #### 2. Configuring EGSEA
 
@@ -205,7 +209,10 @@ Another important parameter in EGSEA is the list of base GSE methods (`baseMetho
 egsea.base()
 ```
 
-Eleven base methods are selected for the EGSEA analysis: *camera*, *safe*, *gage*, *padog*, *plage*, *zscore*, *gsva*, *ssgsea*, *globaltest*, *ora* and *fry*. *Fry* is a fast approximation of *roast* that assumes equal gene-wise variances across samples to produce similar $p$-values to a *roast* analysis run with an infinite number of rotations, and is selected here to save time.
+The *plage*, *zscore* and *ssgsea* algorithms are available in the **GSVA** package and *camera*, *fry* and *roast* are implemented in the **limma** package [@Ritchie:NAR:2015]. 
+The **ora** method is implemented using the `phyper` function from the **stats** package [@R], which estimates the hypergeometric distribution for a $2 \times 2$ contingency table. The remaining algorithms are implemented in Bioconductor packages of the same name. A wrapper function is provided for each individual GSE method to utilize this existing R code and create a universal interface for all methods. 
+
+Eleven base methods are selected for our EGSEA analysis: *camera*, *safe*, *gage*, *padog*, *plage*, *zscore*, *gsva*, *ssgsea*, *globaltest*, *ora* and *fry*. *Fry* is a fast approximation of *roast* that assumes equal gene-wise variances across samples to produce similar $p$-values to a *roast* analysis run with an infinite number of rotations, and is selected here to save time.
 
 ```{r selectbasemethods}
 baseMethods = egsea.base()[-2]
@@ -242,7 +249,7 @@ gsa = egsea(voom.results=v, contrasts=contr.matrix,
 
 In situations where the design matrix includes an intercept, a vector of integers that specify the columns of the design matrix to test using EGSEA can be passed to the `contrasts` argument. If this parameter is `NULL`, all pairwise comparisons based on `v$targets$group` are created, assuming that `group` is the primary factor in the design matrix. Likewise, all the coefficients of the primary factor are used if the design matrix has an intercept.
 
-**EGSEA** is implemented with parallel computing features enabled using the **parallel** package [@R] at both the method-level and experimental contrast-level. The running time of the EGSEA test depends on the base methods selected and whether report generation is enabled or not. The latter significantly increases the run time, particularly if the argument `display.top` is assigned a large value ($>$ 20) and/or a large number of gene set collections are selected. EGSEA reporting functionality generates set-level plots for every gene set as well as collection-level plots which are both time consuming processes. 
+**EGSEA** is implemented with parallel computing features enabled using the **parallel** package [@R] at both the method-level and experimental contrast-level. The running time of the EGSEA test depends on the base methods selected and whether report generation is enabled or not. The latter significantly increases the run time, particularly if the argument `display.top` is assigned a large value ($>$ 20) and/or a large number of gene set collections are selected. EGSEA reporting functionality generates set-level plots for the top gene sets as well as collection-level plots. 
 
 The **EGSEA** package also has a function named `egsea.cnt`, that can perform the EGSEA test using an RNA-seq count matrix rather than a *voom* object, a function named `egsea.ora`, that can perform over-representation analysis with EGSEA reporting capabilities using only a vector of gene IDs, and the `egsea.ma` function that can perform EGSEA testing using a microarray expression matrix as shown later in the workflow. 
 
@@ -339,7 +346,7 @@ The comparative pathway map shows the log-fold-changes for each gene in each con
 ##### Visualizing results at the experiment level
 
 Since **EGSEA** combines the results from multiple gene set testing methods, it can be interesting to compare how different base methods rank a given gene set collection for a selected contrast.
-The *plotMethods* command generates a multi-dimensional scaling (MDS) plot for the ranking of gene sets across all the base methods used (Figure 5). Methods that rank gene sets similarly will appear closer together in this plot and from these plots we see that certain methods tend to cluster together across different gene set collections (Figure 5). Of note from these plots is that methods do not cluster according to the style of null hypothesis tested (i.e. *self-contained* versus *competitive*).
+The *plotMethods* command generates a multi-dimensional scaling (MDS) plot for the ranking of gene sets across all the base methods used (Figure 5). Methods that rank gene sets similarly will appear closer together in this plot and we see that certain methods consistently cluster together across different gene set collections. The clustering of methods does not necessarily follow the style of null hypothesis tested though (i.e. *self-contained* versus *competitive*).
 
 ```{r mdsplot}
 plotMethods(gsa, gs.label = "c2", contrast = "BasalvsLP", 
@@ -348,7 +355,7 @@ plotMethods(gsa, gs.label = "c5BP", contrast = "BasalvsLP",
          file.name = "mds_c5_BasalvsLP", format="png")
 ```
 
-![Multi-dimensional scaling (MDS) plot showing the relationship between different gene set testing methods based on the ranking of the c2](mds_c2_BasalvsLP.png)![and c5 gene sets on the Basal vs LP contrast.](mds_c5_BasalvsLP.png)
+![Multi-dimensional scaling (MDS) plot showing the relationship between different gene set testing methods based on the rankings of the c2](mds_c2_BasalvsLP.png)![and c5 gene sets on the Basal vs LP contrast.](mds_c5_BasalvsLP.png)
 
 The significance of each gene set in a given collection for a selected contrast can be visualized using EGSEA's *plotSummary* method. 
 
@@ -378,7 +385,7 @@ plotSummary(gsa, gs.label = 1, contrast = 3,
          x.axis = "med.rank", x.cutoff=300, format="png")
 ```
 
-![Summary plots (directional (left) and ](summary_c2_LPvsML_dir.png)![filtered directional (right)) of the significance of selected gene sets in the c2 collection for the LP vs ML contrast.](summary_sig_c2_LPvsML_dir.png)
+![Summary plots (directional (left) and ](summary_c2_LPvsML_dir.png)![filtered directional (right)) of the significance of selected gene sets in the c2 collection for the LP vs ML contrast. The x-axis in each plot is the `med.rank`. A cut-off of 300 was used to select significant gene sets in the filtered plot.](summary_sig_c2_LPvsML_dir.png)
 
 Comparative summary plots can be also generated to compare the significance of gene sets between two contrasts, for example, the comparison between Basal vs LP and Basal vs ML (Figure 8a) shows that most of the KEGG pathways are regulated in the same direction with relatively few pathways regulated in opposite directions (purple coloured bubbles in Figure 8, left panel). Such figures can be generated using the *plotSummary* method as follows:
 
@@ -411,11 +418,11 @@ plotBars(gsa, gs.label = "c2", contrast="comparison", file.name="comparison-c2-b
 ```
 
 The colour of each bar is based on the regulation direction of the gene sets, i.e., red for up-regulated, blue for down-regulated and purple for neutral regulation (in the case of comparative analysis of experimental contrasts that have show opposite behaviours).
-By default, the $-\log_{10}(p.adj)$ values are used to plot the bars, the top 20 gene sets are displayed and the gene sets are selected and ordered based on the parameter `sort.by` when the EGSEA analysis was run. The parameters `bar.vals`, `number` and `sort.by` of *plotBars* can be assigned to customize the bar plot. 
+By default, the $-\log_{10}(p.adj)$ values are plotted for the top 20 gene sets selected and ordered based on the `sort.by` parameter. The parameters `bar.vals`, `number` and `sort.by` of *plotBars* can be changed to customize the bar plot. 
 
 ![Bar plot of the $-\log_{10}(p-value)$ of the top 20 gene sets from the comparative analysis of the c2 collection.](comparison-c2-bars.png)
 
-When multiple conditions are studied in the experiment, the *summary heatmap* in **EGSEA** is a desirable way of visualization. The method *plotSummaryHeatmaps* generates a heatmap of the top $N$ gene sets in the comparative analysis across all experimental conditions. By default, 20 gene sets are selected based on the parameter `sort.by` when the analysis was invoked and the heatmap values are the average log-fold changes at the set level for the genes that are regulated in the same direction as the set regulation direction, i.e. `avg.logfc.dir`. The parameters `number`, `sort.by` and `hm.vals` of the *plotSummaryHeatmaps* can be used to customize the summary heatmap. Additionally, the parameter `show.vals` can be used to display the values of a specific EGSEA score on the heatmap cells. An example summary heatmap can be generated for the MSigDB c2 collection with the following code: 
+When changes over multiple conditions are of interest, a *summary heatmap* can be a useful visualization. The method *plotSummaryHeatmaps* generates a heatmap of the top $N$ gene sets in the comparative analysis across all experimental conditions. By default, 20 gene sets are selected based on the `sort.by` parameter and the values plotted are the average log-fold changes at the set level for the genes regulated in the same direction as the set regulation direction, i.e. `avg.logfc.dir`. The parameters `number`, `sort.by` and `hm.vals` of the *plotSummaryHeatmaps* can be used to customize the summary heatmap. Additionally, the parameter `show.vals` can be used to display the values of a specific EGSEA score on the heatmap cells. An example summary heatmap can be generated for the MSigDB c2 collection with the following code: 
 
 ```{r summaryheatmap}
 plotSummaryHeatmap(gsa, gs.label="c2", hm.vals = "avg.logfc.dir",
@@ -448,10 +455,10 @@ The HTML report is a convenient means of organising all of the results generated
 It can easily be shared with collaborators to allow them to explore their results more fully.
 Interactive tables of results via the **DT** package (<https://CRAN.R-project.org/package=DT>) and summary plots from **plotly** (<https://CRAN.R-project.org/package=plotly>) are integrated into the report using **htmlwidgets** (<https://CRAN.R-project.org/package=htmlwidgets>) and can be added by setting `interactive = TRUE` in the command above. This option significantly increases both the run time and size of the final report due to the large number of gene sets in most collections. 
 
-![EGSEA HTML report main page. This summary page details the analysis parameters (methods combined and ranking options selected) and organises the gene set analysis results by contrast, with further separation by gene set collection. The final section on this page presents results from the comparative analysis. For each contrast and gene set collection analysed, links to tables of results and plots are provided.](egsea_report_small.png)
+![The EGSEA HTML report main page. This summary page details the analysis parameters (methods combined and ranking options selected) and organises the gene set analysis results by contrast, with further separation by gene set collection. The final section on this page presents results from the comparative analysis. For each contrast and gene set collection analysed, links to tables of results and plots are provided.](egsea_report_small.png)
 
-This example completes our overview of EGSEA's gene set testing and plotting capabilities for RNA-seq data.
-The same functionality can also be used for gene set testing of microarray data. Readers can refer to the vignette and/or the reference manual of the EGSEA package available at the Bioconductor website for more technical details on each of the above methods and classes.
+This example completes our overview of EGSEA's gene set testing and plotting capabilities for RNA-seq data. Readers can refer to the EGSEA vignette or individual help pages for further details on each of the above methods and classes.
+
 
 ## Analysis of microarray data with EGSEA
 
@@ -524,9 +531,9 @@ contr.matrix
 
 #### 1. Creating gene set collection indexes
 
-As before, we will extract the mouse c2, c5 and KEGG gene signature collections from the **EGSEAdata** package and build indexes based on Entrez IDs that link between the genes in each signature and the rows of our expression matrix.
+We next extract the mouse c2, c5 and KEGG gene signature collections from the **EGSEAdata** package and build indexes based on Entrez IDs that link between the genes in each signature and the rows of our expression matrix.
 
-```{r maindex}
+```{r maindex, eval=FALSE}
 library(EGSEA)
 library(EGSEAdata)
 gs.annots = buildIdx(entrezIDs=probe.annot[, 2], 
@@ -564,7 +571,7 @@ generateReport(gsam, number = 20, report.dir="./mam-ma-egsea-report")
 topSets(gsam, gs.label="c2", contrast="comparison", names.only=TRUE, number=5)
 ```
 
-The EGSEA report generated for this dataset is available online at <http://bioinf.wehi.edu.au/EGSEA/mam-ma-egsea-report/index.html>. Reanalysis of this data retrieves similar c2 gene sets to those identified by analysis of RNA-seq data. These included the `LIM` gene sets as well as those derived from populations with similar cellular origin (set 4).
+The EGSEA report generated for this dataset is available online at <http://bioinf.wehi.edu.au/EGSEA/mam-ma-egsea-report/index.html>. Reanalysis of this data retrieves similar c2 gene sets to those identified by analysis of RNA-seq data. These included the `LIM` gene signatures (sets 1, 2 and 3) as well as those derived from populations with similar cellular origin (set 4).
 
 # Discussion
 
@@ -572,7 +579,7 @@ In this workflow article, we have demonstrated how to use the EGSEA package to c
 A key benefit of an EGSEA analysis is the detailed and comprehensive HTML report that can be shared with collaborators to help them interpret their data. This report includes tables prioritising gene signatures according to the user specified analysis options, and both gene set specific and summary graphics, each of which can be generated individually using specific R commands. 
 The approach taken by EGSEA is facilitated by the diverse range of gene set testing algorithms and plotting capabilities available within Bioconductor.
 EGSEA has been tailored to suit a **limma**-based differential expression analysis which continues to be a very popular and flexible platform for transcriptomic data. 
-Analysts are still free to choose an individual GSE algorithm to prioritise their results rather than an ensemble solution and will benefit from EGSEA's comprehensive reporting capability in this situation.
+Analysts who choose an individual GSE algorithm to prioritise their results rather than an ensemble solution can still benefit from EGSEA's comprehensive reporting capability.
 
 # Software and code used
 This workflow makes use of various packages from version 3.5 of the Bioconductor project, running on **R** version 3.4.0 or higher [@R]. The packages used and their version numbers are listed below. The **EGSEAdata** package contains gene signatures used by EGSEA. Code to perform this analysis is available in the **EGSEA123** package available as a Bioconductor workflow from  <https://www.bioconductor.org/help/workflows/EGSEA123>.
@@ -590,5 +597,8 @@ MA and MN are employees of CSL Limited. The authors declare that they have no co
 
 # Grant information
 This worked was funded by National Health and Medical Research Council (NHMRC) Fellowship GNT1104924 to MER, Victorian State Government Operational Infrastructure Support and Australian Government NHMRC IRIISS.
+
+# Acknowledgements
+The authors thank Dr Alexandra Garnham for reading through this workflow article. This material was first trialled in a workshop at the BioC 2017 conference at the Dana Farber Cancer Institute (Boston, MA, 28 July 2017) and we the thank the participants at this workshop for their feedback.
 
 # References
