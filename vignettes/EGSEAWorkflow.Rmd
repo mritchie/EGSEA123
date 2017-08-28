@@ -27,11 +27,12 @@ output:
 
 # Abstract
 
-Gene set enrichment analysis highlights the biological processes altered in genomic data sets. 
-The Bioconductor project hosts over 80 software packages capable of gene set analysis, most of which search for enriched signatures amongst differentially regulated genes to reveal higher level biological themes.
+Gene set enrichment analysis is routinely applied to prioritise the biological processes perturbed in genomic datasets. 
+The Bioconductor project hosts over 80 software packages capable of gene set analysis. 
+Most of these packages search for enriched signatures amongst differentially regulated genes to reveal higher level biological themes that may be missed when focusing only on evidence from individual genes.
 With so many different methods on offer, choosing the best algorithm and visualization approach can be challenging. 
-This workflow demonstrates use of the **EGSEA** package that is intended to solve this problem by combining the results from up to 12 prominent gene set testing algorithms to obtain a consensus ranking with biologically relevant results.
-It shows how **EGSEA** can extend a **limma**-based differential expression analysis for RNA-seq and microarray data using experiments that profile 3 distinct cell populations important for studying the origins of breast cancer. 
+The **EGSEA** package solves this problem by combining results from up to 12 prominent gene set testing algorithms to obtain a consensus ranking of biologically relevant results.
+This workflow demonstrates how **EGSEA** can extend **limma**-based differential expression analyses for RNA-seq and microarray data using experiments that profile 3 distinct cell populations important for studying the origins of breast cancer. 
 Following data normalization and set-up of an appropriate linear model for differential expression analysis, **EGSEA** builds gene signature specific indexes that link a wide range of mouse or human gene set collections obtained from MSigDB, GeneSetDB and KEGG to the gene expression data being investigated. 
 **EGSEA** is then configured and the ensemble enrichment analysis run, returning an object that can be queried using several S4 methods for ranking gene sets and visualizing results via heatmaps, KEGG pathway views, GO graphs, scatter plots and bar plots. 
 Finally, an HTML report that combines these displays can fast-track the sharing of results with collaborators, and thus expedite downstream biological validation. 
