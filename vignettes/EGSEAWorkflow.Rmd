@@ -600,6 +600,7 @@ MA and MN are employees of CSL Limited. The authors declare that they have no co
 This worked was funded by National Health and Medical Research Council (NHMRC) Fellowship GNT1104924 to MER, Victorian State Government Operational Infrastructure Support and Australian Government NHMRC IRIISS.
 
 # Acknowledgements
-The authors thank Dr Alexandra Garnham for reading through this workflow article. This material was first trialled in a workshop at the BioC 2017 conference at the Dana Farber Cancer Institute (Boston, MA, 28 July 2017) and we the thank the participants at this workshop for their feedback.
+The authors thank Dr Alexandra Garnham for reading through this workflow article.
+This material was first trialled in a workshop at the BioC 2017 conference at the Dana Farber Cancer Institute (Boston, MA) on 28 July 2017. We thank the participants at this workshop for their feedback.
 
 # References
