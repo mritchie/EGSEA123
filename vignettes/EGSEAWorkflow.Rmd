@@ -4,15 +4,15 @@ author:
   - name: Monther Alhamdoosh
     affiliation: CSL Limited, Bio21 Institute, 30 Flemington Road, Parkville, Victoria 3010, Australia 
   - name: Charity W. Law
-    affiliation: The Walter and Eliza Hall Institute of Medical Research, 1G Royal Parade, Parkville, VIC 3052, Melbourne, Australia; Department of Medical Biology, The University of Melbourne, Parkville, VIC 3010, Melbourne, Australia
+    affiliation: The Walter and Eliza Hall Institute of Medical Research, 1G Royal Parade, Parkville, Victoria 3052, Melbourne, Australia; Department of Medical Biology, The University of Melbourne, Parkville, Victoria 3010, Melbourne, Australia
   - name: Luyi Tian
-    affiliation: The Walter and Eliza Hall Institute of Medical Research, 1G Royal Parade, Parkville, VIC 3052, Melbourne, Australia
+    affiliation: The Walter and Eliza Hall Institute of Medical Research, 1G Royal Parade, Parkville, Victoria 3052, Melbourne, Australia
   - name: Julie M. Sheridan
-    affiliation: The Walter and Eliza Hall Institute of Medical Research, 1G Royal Parade, Parkville, VIC 3052, Melbourne, Australia
+    affiliation: The Walter and Eliza Hall Institute of Medical Research, 1G Royal Parade, Parkville, Victoria 3052, Melbourne, Australia
   - name: Milica Ng
     affiliation: CSL Limited, Bio21 Institute, 30 Flemington Road, Parkville, Victoria 3010, Australia 
   - name: Matthew E. Ritchie
-    affiliation: The Walter and Eliza Hall Institute of Medical Research, 1G Royal Parade, Parkville, VIC 3052, Melbourne, Australia; Department of Medical Biology, The University of Melbourne, Parkville, VIC 3010, Melbourne, Australia; School of Mathematics and Statistics, The University of Melbourne, Parkville, VIC 3010, Melbourne, Australia
+    affiliation: The Walter and Eliza Hall Institute of Medical Research, 1G Royal Parade, Parkville, Victoria 3052, Melbourne, Australia; Department of Medical Biology, The University of Melbourne, Parkville, Victoria 3010, Melbourne, Australia; School of Mathematics and Statistics, The University of Melbourne, Parkville, Victoria 3010, Melbourne, Australia
 date: 14 July 2017
 vignette: >
   %\VignetteIndexEntry{Easy and efficient ensemble gene set testing with EGSEA}
@@ -27,7 +27,7 @@ output:
 
 # Abstract
 
-Gene set enrichment analysis is routinely applied to prioritise the biological processes perturbed in genomic datasets. 
+Gene set enrichment analysis is a popular approach for prioritising the biological processes perturbed in genomic datasets. 
 The Bioconductor project hosts over 80 software packages capable of gene set analysis. 
 Most of these packages search for enriched signatures amongst differentially regulated genes to reveal higher level biological themes that may be missed when focusing only on evidence from individual genes.
 With so many different methods on offer, choosing the best algorithm and visualization approach can be challenging. 
@@ -407,7 +407,7 @@ plotGOGraph(gsa, gs.label="c5BP", contrast = 1, file.name="BasalvsLP-c5BP-top-",
 plotGOGraph(gsa, gs.label="c5CC", contrast = 1, file.name="BasalvsLP-c5CC-top-", format="png")
 ```
 
-![GO graphs of the top significant GO terms from the c5 gene set collection (cellular compartment (left)](BasalvsLP-c5CC-top-CC.png)![and biological process (right)) for the contrast Basal vs LP.](BasalvsLP-c5BP-top-BP.png)
+![GO graphs of the top significant GO terms from the c5 gene set collection (biological process (left)](BasalvsLP-c5BP-top-BP.png)![and cellular compartment (right)) for the contrast Basal vs LP.](BasalvsLP-c5CC-top-CC.png)
 
 The GO graphs are coloured based on the values of the argument `sort.by`, which in this instance was taken as `med.rank` by default since this was selected when EGSEA was invoked. The top five most significant GO terms are highlighted by default in each GO category (MF, CC or BP). More terms can be displayed by changing the value of the parameter `noSig`. However, this might generate very complicated and unresolved graphs. The colour of the nodes vary between red (most significant) and yellow (least significant). The values of the `sort.by` scoring function are scaled between 0 and 1 to generate these graphs. 
 
@@ -583,24 +583,20 @@ EGSEA has been tailored to suit a **limma**-based differential expression analys
 Analysts who choose an individual GSE algorithm to prioritise their results rather than an ensemble solution can still benefit from EGSEA's comprehensive reporting capability.
 
 # Software and code used
-This workflow makes use of various packages from version 3.5 of the Bioconductor project, running on **R** version 3.4.0 or higher [@R]. The packages used and their version numbers are listed below. The **EGSEAdata** package contains gene signatures used by EGSEA. Code to perform this analysis is available in the **EGSEA123** package available as a Bioconductor workflow from  <https://www.bioconductor.org/help/workflows/EGSEA123>.
+Code to perform this analysis is available in the **EGSEA123** workflow package from Bioconductor (<https://www.bioconductor.org/help/workflows/EGSEA123>).
 
 
 ```{r softwareinfo}
 sessionInfo()
 ```
 
-# Author contributions
-All authors were involved in writing and contributing code for the article.
-
 # Competing interests
 MA and MN are employees of CSL Limited. The authors declare that they have no competing interests.
 
 # Grant information
-This worked was funded by National Health and Medical Research Council (NHMRC) Fellowship GNT1104924 to MER, Victorian State Government Operational Infrastructure Support and Australian Government NHMRC IRIISS.
+This work was funded by a National Health and Medical Research Council (NHMRC) Fellowship to MER (GNT1104924), Victorian State Government Operational Infrastructure Support and Australian Government NHMRC IRIISS.
 
 # Acknowledgements
-The authors thank Dr Alexandra Garnham for reading through this workflow article.
-This material was first trialled in a workshop at the BioC 2017 conference at the Dana Farber Cancer Institute (Boston, MA) on 28 July 2017. We thank the participants at this workshop for their feedback.
+This material was first trialled in a workshop at the BioC 2017 conference at the Dana Farber Cancer Institute (Boston, MA) on 28 July 2017. We thank the participants at this workshop for their feedback. The authors also thank Dr Alexandra Garnham (The Walter and Eliza Hall Institute of Medical Research) for feedback on this workflow article.
 
 # References
